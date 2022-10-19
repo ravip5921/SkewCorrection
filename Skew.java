@@ -13,6 +13,8 @@ public class Skew {
     // Vars to define matrix
     private int MAT_SIZE_X;
     private int MAT_SIZE_Y;
+    private double DEG_TO_RAD = Math.PI / 180;
+    private double RAD_TO_DEG = 180 / Math.PI;
 
     public Skew() {
         SIZE_X = 10;
@@ -24,32 +26,31 @@ public class Skew {
 
             }
         }
-        image[0][0] = 1;
-        image[1][0] = 1;
-        image[2][0] = 1;
-        image[2][1] = 1;
-        image[2][2] = 1;
-        image[2][3] = 1;
-        image[3][0] = 1;
-        image[4][0] = 1;
-        image[6][0] = 1;
-        image[7][0] = 1;
-        image[5][3] = 1;
-        image[5][4] = 1;
-        image[8][6] = 1;
-        image[9][6] = 1;
-        image[8][5] = 1;
-        image[9][5] = 1;
-        image[6][6] = 1;
-        image[7][6] = 1;
-        image[9][7] = 1;
-        image[9][8] = 1;
-        image[9][9] = 1;
-        image[8][9] = 1;
-        for (int i = 0; i < 3; i++) {
-            for (int j = 4; j < 7; j++) {
-                image[i][j] = 1;
-            }
+        // image[0][0] = 1;
+        // image[1][0] = 1;
+        // image[2][0] = 1;
+        // image[3][3] = 1;
+        // image[2][2] = 1;
+        // // image[2][3] = 1;
+        // image[3][0] = 1;
+        // image[4][1] = 1;
+        // image[5][2] = 1;
+        // image[6][3] = 1;
+        // // image[5][3] = 1;
+        // // image[5][4] = 1;
+        // image[8][6] = 1;
+        // image[9][6] = 1;
+        // image[8][5] = 1;
+        // image[4][4] = 1;
+        // image[5][5] = 1;
+        // image[6][6] = 1;
+        // image[7][7] = 1;
+        // image[9][8] = 1;
+        // image[9][9] = 1;
+        // image[8][8] = 1;
+        for (int i = 0; i < 10; i++) {
+            image[0][i] = 1;
+
         }
 
         // Calculating maximum distance between 2 points in the image
@@ -108,13 +109,20 @@ public class Skew {
     public void conductElection() {
         double d = 0;
         double theta = 0;
-        for (int i = 0; i < SIZE_X; i++) {
+        for (int i = 0; i < SIZE_X - 1; i++) {
             for (int j = SIZE_Y - 1; j >= 0; j--) {
+                // for (int j = 0; j < SIZE_Y; j++) {
                 if (image[i][j] != 0) {
                     for (theta = 0; theta < AA; theta = theta + 0.2) {
-                        d = j * Math.sin(theta) + i * Math.cos(theta);
+                        d = j * Math.sin(theta * DEG_TO_RAD) + i * Math.cos(theta * DEG_TO_RAD);
+                        if (d < 0) {
+                            System.out.println(Math.sin(theta) + " " + theta + " " + i + " " + j);
+                        } else {
+                            votingMat[(int) (d * 10)][(int) (theta * 5)]++;
+                        }
                         // d is -ve so out of bounds error. Need to correct
-                        votingMat[(int) (d * 10)][(int) (theta * 5)]++;
+                        // votingMat[(int) (d * 10)][(int) (theta * 5)]++;
+                        // votingMat[0][0]++;
                     }
                 }
             }
@@ -129,9 +137,11 @@ public class Skew {
         for (d = 0; d < dMax; d = d + 0.1) {
             for (theta = 0; theta < AA; theta = theta + 0.2) {
                 if (votingMat[(int) (d * 10)][(int) (theta * 5)] >= voteMax) {
+                    voteMax = votingMat[(int) (d * 10)][(int) (theta * 5)];
                     skewAngle = theta;
                 }
             }
         }
+        System.out.println(skewAngle);
     }
 }
